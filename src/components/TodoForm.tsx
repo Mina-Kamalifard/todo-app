@@ -4,16 +4,14 @@ interface TodoFormProps {
   onAdd: (text: string) => void;
 }
 
-// فرم برای اضافه کردن تسک جدید
 const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
-  const [text, setText] = useState(""); // state برای مقدار ورودی کاربر
+  const [text, setText] = useState("");
 
-  // وقتی فرم ارسال بشه
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // جلوگیری از رفرش شدن صفحه
-    if (!text.trim()) return; // اگه متن خالی باشه کاری نکن
-    onAdd(text); // تابع ارسال تسک به App
-    setText(""); // پاک کردن فیلد ورودی
+    e.preventDefault();
+    if (!text.trim()) return;
+    onAdd(text);
+    setText("");
   };
 
   return (
