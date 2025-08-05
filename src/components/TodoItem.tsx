@@ -3,8 +3,8 @@ import { Todo } from "../types/todo";
 
 interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
+  onToggle: () => void;
+  onDelete: () => void;
   onStartEdit: (id: number, currentText: string) => void;
   isEditing: boolean;
   editingText: string;
@@ -24,6 +24,28 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onSaveEdit,
   onCancelEdit,
 }) => {
+  // محاسبه رنگ بر اساس اختلاف ساعت
+  const now = Date.now();
+  const diffHours = (now - todo.createdAt) / (1000 * 60 * 60);
+
+  let timeColor = "text-gray-500";
+
+  if (!todo.completed) {
+    if (diffHours >= 28) {
+      timeColor = "text-red-600 font-bold";
+    } else if (diffHours >= 24) {
+      timeColor = "text-orange-500 font-semibold";
+    }
+  }
+
+  // برای نمایش تاریخ و ساعت
+  const todoDate = new Date(todo.createdAt);
+  const formattedDate = todoDate.toLocaleDateString("fa-IR");
+  const formattedTime = todoDate.toLocaleTimeString("fa-IR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <motion.li
       key={todo.id}
@@ -31,9 +53,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 50 }}
       transition={{ duration: 0.3 }}
-      className={`flex justify-between items-center border-b py-2 ${
+      className={`flex justify-between items-center border-b py-2 px-2 rounded-md ${
         todo.completed ? "bg-green-50" : ""
-      } rounded-md px-2`}
+      }`}
     >
       {isEditing ? (
         <form
@@ -64,15 +86,12 @@ const TodoItem: React.FC<TodoItemProps> = ({
         </form>
       ) : (
         <>
-          <div
-            className="flex-1 cursor-pointer select-none"
-            onClick={() => onToggle(todo.id)}
-          >
+          <div className="flex-1 cursor-pointer select-none" onClick={onToggle}>
             <div className={todo.completed ? "line-through text-gray-400" : ""}>
               {todo.text}
             </div>
-            <div className="text-xs text-gray-500">
-              {todo.date} - {todo.time}
+            <div className={`text-xs ${timeColor}`}>
+              {formattedDate} - {formattedTime}
             </div>
           </div>
 
@@ -83,10 +102,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             >
               ویرایش
             </button>
-            <button
-              className="text-red-500 text-sm"
-              onClick={() => onDelete(todo.id)}
-            >
+            <button className="text-red-500 text-sm" onClick={onDelete}>
               حذف
             </button>
           </div>

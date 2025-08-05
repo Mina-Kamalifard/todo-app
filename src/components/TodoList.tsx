@@ -1,11 +1,9 @@
+import { Todo } from "../types/todo"; // یا مسیر صحیح فایل نوع‌ها
 import { AnimatePresence } from "framer-motion";
-import { Todo } from "../types/todo";
 import TodoItem from "./TodoItem";
-
+import { useTodoStore } from "../store/todoStore";
 interface TodoListProps {
   todos: Todo[];
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
   editingId: number | null;
   setEditingId: (id: number | null) => void;
   editingText: string;
@@ -15,9 +13,7 @@ interface TodoListProps {
 }
 
 const TodoList: React.FC<TodoListProps> = ({
-  todos,
-  onToggle,
-  onDelete,
+  todos, // از پراپ استفاده کن
   editingId,
   setEditingId,
   editingText,
@@ -37,8 +33,8 @@ const TodoList: React.FC<TodoListProps> = ({
           <TodoItem
             key={todo.id}
             todo={todo}
-            onToggle={onToggle}
-            onDelete={onDelete}
+            onToggle={() => useTodoStore.getState().toggleTodo(todo.id)}
+            onDelete={() => useTodoStore.getState().deleteTodo(todo.id)}
             onStartEdit={handleStartEdit}
             isEditing={editingId === todo.id}
             editingText={editingText}
